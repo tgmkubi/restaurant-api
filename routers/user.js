@@ -3,8 +3,7 @@ const router = express.Router();
 const User = require('../models/User');
 const userQueryMiddleware = require('../middlewares/query/UserQueryMiddleware');
 const { checkUserExist } = require('../middlewares/database/databaseErrorHelpers');
-const { getSingleUser } = require('../controllers/user');
-const { getAllUsers } = require('../controllers/user');
+const { getSingleUser, getAllUsers } = require('../controllers/user');
 
 router.get('/:id', checkUserExist, getSingleUser);
 router.get('', userQueryMiddleware(User), getAllUsers);

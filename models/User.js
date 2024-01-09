@@ -57,7 +57,8 @@ const UserSchema = new Schema({
         },
         coordinates: {
             type: [Number],
-            index: "2dsphere"
+            index: "2dsphere",
+            required: [true, 'Coordinates is required'],
         }
     },
     orders: [{
@@ -92,7 +93,7 @@ UserSchema.methods.generateJwtFromUser = function () {
     const { JWT_SECRET_KEY, JWT_EXPIRE } = process.env;
     const payload = {
         id: this._id,
-        name: this.name,
+        username: this.username,
     }
     const options = {
         expiresIn: JWT_EXPIRE

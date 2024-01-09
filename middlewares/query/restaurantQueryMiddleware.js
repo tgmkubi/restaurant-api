@@ -1,13 +1,22 @@
 const asyncErrorWrapper = require('express-async-handler');
-const { searchHelper, paginationHelper } = require('./queryMiddlewareHelpers');
+const { searchHelper, populateHelper, restaurantSortHelper, paginationHelper } = require('./queryMiddlewareHelpers');
 
-const userQueryMiddleware = function (model) {
+const restaurantQueryMiddleware = function (model, options) {
+
     return asyncErrorWrapper(async function (req, res, next) {
         //Initial Query
         let query = model.find();
 
         //Search
-        query = searchHelper("username", query, req);
+        query = searchHelper("name", query, req);
+
+        //Populate
+        if (options && options.population) {
+            query = populateHelper(query, options.population);
+        };
+
+        //Sorting
+        query = restaurantSortHelper(query, req);
 
         //Pagination
         const total = await model.countDocuments();
@@ -28,4 +37,4 @@ const userQueryMiddleware = function (model) {
     });
 };
 
-module.exports = userQueryMiddleware;
+module.exports = restaurantQueryMiddleware;
