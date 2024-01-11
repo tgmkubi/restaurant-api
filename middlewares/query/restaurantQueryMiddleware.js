@@ -8,7 +8,7 @@ const restaurantQueryMiddleware = function (model, options) {
         let query = model.find();
 
         //Search
-        query = searchHelper("name", query, req);
+        query = searchHelper("description", query, req);
 
         //Populate
         if (options && options.population) {

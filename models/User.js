@@ -67,7 +67,7 @@ const UserSchema = new Schema({
     }],
     reviews: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Order'
+        ref: 'Review'
     }],
     resetPasswordToken: {
         type: String

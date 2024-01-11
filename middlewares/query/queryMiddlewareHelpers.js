@@ -1,3 +1,6 @@
+const User = require('../../models/User');
+const Review = require('../../models/Review');
+
 const searchHelper = (searchKey, query, req) => {
     if (req.query.search) {
         const searchObject = {};
@@ -15,15 +18,14 @@ const populateHelper = (query, population) => {
 const restaurantSortHelper = (query, req) => {
     const sortKey = req.query.sortBy;
 
-    // Problem 2: Açıklamasında lahmacun içeren, req.user.location koordinatlaraına en yakın 5 restoranı listeleyiniz.
     if (sortKey === "nearest-user-location") {
         if (!req.user.location || !req.user.location.coordinates) {
             throw new Error("User location coordinates are missing.");
         }
 
         const userCoordinates = req.user.location.coordinates;
-        return query.sort({
-            location: {
+        return query.where({
+            "address.location.coordinates": {
                 $near: {
                     $geometry: {
                         type: "Point",
@@ -31,13 +33,12 @@ const restaurantSortHelper = (query, req) => {
                     },
                 },
             },
-        }).limit(5);
+        });
     }
-
     // Diğer sıralama kriterlerini buraya ekleyebilirsiniz.
 
     // Varsayılan sıralama olmadan query'i geri döndürün
-    return query
+    return query;
 };
 
 const paginationHelper = async (totalDocuments, query, req) => {

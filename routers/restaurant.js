@@ -7,9 +7,8 @@ const { checkRestaurantExist } = require('../middlewares/database/databaseErrorH
 const { createRestaurant, getAllRestaurants } = require('../controllers/restaurant'); // TODO
 const { createBranche } = require('../controllers/branche');
 
-
-// TODO: TEST
-router.get('/', restaurantQueryMiddleware(Restaurant, {
+// OK
+router.get('/', getAccessToRoute, restaurantQueryMiddleware(Restaurant, {
     population: {
         path: "reviews",
         select: "comment rating",

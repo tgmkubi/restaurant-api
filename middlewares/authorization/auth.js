@@ -4,23 +4,50 @@ const asyncErrorWrapper = require('express-async-handler');
 const User = require("../../models/User");
 const { isTokenIncluded, getAccessTokenFromHeader } = require('../../helpers/authorization/tokenHelpers');
 
-const getAccessToRoute = (req, res, next) => {
+// const getAccessToRoute = async (req, res, next) => {
+//     const { JWT_SECRET_KEY } = process.env;
+//     if (!isTokenIncluded(req)) {
+//         return next(new CustomError('You are not authorized to access this route', 401));
+//     }
+//     const access_token = getAccessTokenFromHeader(req);
+
+//     jwt.verify(access_token, JWT_SECRET_KEY, (err, decoded) => {
+//         if (err) {
+//             return next(new CustomError('You are not authorized to access this route', 401));
+//         };
+
+//         req.user = {
+//             id: decoded.id,
+//             username: decoded.username,
+//         }
+
+//         // console.log(decoded);
+
+//         next();
+//     });
+// };
+
+const getAccessToRoute = async (req, res, next) => {
     const { JWT_SECRET_KEY } = process.env;
+
     if (!isTokenIncluded(req)) {
         return next(new CustomError('You are not authorized to access this route', 401));
     }
+
     const access_token = getAccessTokenFromHeader(req);
 
-    jwt.verify(access_token, JWT_SECRET_KEY, (err, decoded) => {
+    jwt.verify(access_token, JWT_SECRET_KEY, async (err, decoded) => {
         if (err) {
             return next(new CustomError('You are not authorized to access this route', 401));
-        };
-        req.user = {
-            id: decoded.id,
-            username: decoded.username
         }
 
-        // console.log(decoded);
+        const user = await User.findById(decoded.id);
+
+        req.user = {
+            id: decoded.id,
+            username: decoded.username,
+            location: user.location
+        };
 
         next();
     });
