@@ -1,7 +1,8 @@
 const asyncErrorWrapper = require('express-async-handler');
 const Review = require('../models/Review');
-const { paginationHelper } = require('../helpers/mongodb/pagination');
-const { lookupHelper } = require('../helpers/mongodb/lookup');
+// const { paginationHelper } = require('../helpers/mongodb/pagination');
+// const { lookupHelper } = require('../helpers/mongodb/lookup');
+const { aggregationHelper } = require('../helpers/mongodb/aggregation');
 
 // const getAllReviews = asyncErrorWrapper(async (req, res, next) => {
 
@@ -85,26 +86,28 @@ const { lookupHelper } = require('../helpers/mongodb/lookup');
 
 const getAllReviews = asyncErrorWrapper(async (req, res, next) => {
 
-    const pagination = paginationHelper(req);
-    const lookup = lookupHelper();
+    // const pagination = paginationHelper(req);
+    // const lookup = lookupHelper();
 
-    const aggregation = [
-        {
-            $match: {} // tüm yorumları getir
-        },
-        {
-            $lookup: lookup
-        },
-        {
-            $unwind: '$user' // user dizisini tek bir nesneye dönüştür
-        },
-        {
-            $sort: { 'user.age': 1 } // user.age alanına göre sırala
-        },
-        {
-            $facet: pagination
-        }
-    ];
+    // const aggregation = [
+    //     {
+    //         $match: {} // tüm yorumları getir
+    //     },
+    //     {
+    //         $lookup: lookup
+    //     },
+    //     {
+    //         $unwind: '$user' // user dizisini tek bir nesneye dönüştür
+    //     },
+    //     {
+    //         $sort: { 'user.age': 1 } // user.age alanına göre sırala
+    //     },
+    //     {
+    //         $facet: pagination
+    //     }
+    // ];
+
+    const aggregation = aggregationHelper(req);
 
     const queryResults = await Review.aggregate(aggregation);
 
