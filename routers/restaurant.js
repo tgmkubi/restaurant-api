@@ -8,17 +8,17 @@ const { getSingleRestaurantDetail, getAllHighRatingRestaurants, createRestaurant
 const { createBranche, deleteBranche, getAllBranchesOfRestaurant, getSingleBrancheDetailOfRestaurant } = require('../controllers/branche');
 const { createOrder, deleteOrder } = require('../controllers/order');
 
-router.get('/:id', checkRestaurantExist, getSingleRestaurantDetail);
-router.get('/:id/branches', checkRestaurantExist, getAllBranchesOfRestaurant);
-router.get('/:id/branches/:brancheId', [checkRestaurantExist, checkBrancheExist], getSingleBrancheDetailOfRestaurant)
 router.get('/high-ratings', getAllHighRatingRestaurants);
-
 router.get('/', getAccessToRoute, restaurantQueryMiddleware(Restaurant, {
     population: {
         path: "reviews",
         select: "comment rating",
     }
 }), getAllRestaurants);
+
+router.get('/:id', checkRestaurantExist, getSingleRestaurantDetail);
+router.get('/:id/branches', checkRestaurantExist, getAllBranchesOfRestaurant);
+router.get('/:id/branches/:brancheId', [checkRestaurantExist, checkBrancheExist], getSingleBrancheDetailOfRestaurant)
 
 // Only Users
 router.post('/:restaurant_id/orders/createorder', [getAccessToRoute, checkRestaurantExist, checkMenuItemsExist], createOrder);
