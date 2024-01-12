@@ -1,3 +1,4 @@
+
 ![Logo](https://images.pexels.com/photos/2961968/pexels-photo-2961968.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1)
 
 # Restaurant Rest API
@@ -30,7 +31,7 @@ To get the Node server running locally:
 
 ### Dependencies
 
-- [bcryptjs](https://www.npmjs.com/package/slugify) - Hashing Password
+- [bcryptjs](https://www.npmjs.com/package/bcryptjs) - Hashing Password
 - [dotenv](https://www.npmjs.com/package/dotenv) - Zero-Dependency module that loads environment variables
 - [express](https://www.npmjs.com/package/express) - The server for handling and routing HTTP requests
 - [express-async-handler](https://www.npmjs.com/package/express-async-handler) - Handling exceptions inside of async express routes and passing them into custom express error handlers.
@@ -102,17 +103,16 @@ We define express middlewares in `middlewares/authorization/auth.js` that can be
 | `DELETE` | `/api/restaurants/<brancheId>/deletebranche` | *Delete Branche* | Empty | Admin Users|
 | `PUT` | `/api/restaurants/<restaurantId>/addbranchetorestaurant/<brancheId>` | *Add Branche To Restaurant* | Empty | Admin Users|
 | `GET` | `/api/restaurants/<restaurantId>` | *Get Single Restaurant Details* | Empty | Public|
-| `GET` | `/api/restaurants/` | *Get All Restaurants Details* | Empty | Public|
+| `GET` | `/api/restaurants/sortBy=nearest-user-location&search=fast&limit=5` | *Get All Nearby Restaurants* | Empty | All Users|
 | `GET` | `/api/restaurants/<restaurantId>/branches` | *Get All Branches of The Restaurant* | Empty | Public|
-| `GET` | `/api/restaurants/nearby?limit=2&filter=lahmacun` | *Get Nearby Restaurant Detail with filter* | Empty | All Users|
 | `GET` | `/api/restaurants/<restaurantId>/branches/<brancheId>/` | *Get Single Branche Details of The Restaurant* | Empty | All Users|
-| `PUT` | `/api/restaurants/<restaurantId>/deletebranchefromrestaurant/<brancheId>/` | *Delete Branche From Restaurant* | Empty | Admin Users|
+| `DELETE` | `/api/restaurants/<brancheId>/deletebranche` | *Delete Branche* | Empty | Admin Users|
 | `PUT` | `/api/restaurants/<restaurantId>/addmenustorestaurant/` | *Add Menu(s) to Restaurant* | {"menuIds": ["6594256494fb69770f94185b", "6595296f3d934094f8a84179"]} | Admin Users|
-| `POST` | `/api/restaurants/<restaurantId>/orders/createorder` | *Create Order in the Restaurant* | {"menus": ["6595296f3d934094f8a84179", "6594256494fb69770f94185b"]} | All Users|
-| `DELETE` | `/api/restaurants/<restaurantId>/orders/deleteorder/<orderId>` | *Delete Order in the Restaurant* | Empty | Admin Users & Order Owner|
-| `GET` | `/api/restaurants/find-recommended-restaurants` | *Find Recommended Restaurants* | Empty | All Users|
+| `POST` | `/api/restaurants/<restaurantId>/orders/createorder` | *Create Order in the Restaurant* | {"menuIds": ["6595296f3d934094f8a84179", "6594256494fb69770f94185b"]} | All Users|
+| `DELETE` | `/api/restaurants/orders/<orderId>` | *Delete Order* | Empty | Admin Users & Order Owner|
+| `GET` | `/api/restaurants/high-ratings?rate=4&limit=2&page=1&types=Fast%20Food,Ev%20Yemekleri` | *Find High Rated Restaurants* | Empty | All Users|
 | `POST` | `/api/order-review/<orderId>/createreview` | *Add Review (comment - rating) to Order* | {"comment": "This is comment for order", "rating": 9} | Order Owner|
-| `GET` | `/api/order-review?page=2` | *Get Latest 20 Reviews\ sorted by user age* | Empty | All Users|
+| `GET` | `/api/reviews?sortBy=age&page=1&limit=20` | *Get Latest 20 Reviews\ sorted by user age* | Empty | All Users|
 
 
 ## MENU
@@ -124,7 +124,6 @@ We define express middlewares in `middlewares/authorization/auth.js` that can be
 | `PUT` | `/api/menu/<menuId>/addmenuitemtomenu/<menuItemId>` | *Add Menu Item to Menu* | Empty | Admin Users|
 | `PUT` | `/api/menu/<menuId>/addmenuitemstomenu/` | *Add Menu Items to Menu* | {"menuItemIds": ["659529d43d934094f8a8417d", "659529e83d934094f8a84181"]} | Admin Users|
 | `PUT` | `/api/menu/<menuId>/deletemenuitemfrommenu/<menuItemId>` | *Delete Menu Item from Menu* | Empty | Admin Users|
-
 
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
