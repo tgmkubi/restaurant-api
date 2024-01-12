@@ -2,6 +2,13 @@ const asyncErrorWrapper = require('express-async-handler');
 const CustomError = require('../helpers/error/CustomError');
 const Restaurant = require('../models/Restaurant');
 
+const getSingleRestaurantDetail = asyncErrorWrapper(async (req, res, next) => {
+    return res.status(200).json({
+        success: true,
+        data: req.restaurant
+    })
+});
+
 // const getAllHighRatingRestaurants = asyncErrorWrapper(async (req, res, next) => {
 //     const { page = 1, limit = 5 } = req.query;
 //     const skip = (page - 1) * limit;
@@ -178,4 +185,62 @@ const getAllRestaurants = asyncErrorWrapper(async (req, res, next) => {
     return res.status(200).json(res.queryResults);
 });
 
-module.exports = { getAllHighRatingRestaurants, createRestaurant, getAllRestaurants };
+const addBrancheToRestaurant = asyncErrorWrapper(async (req, res, next) => {
+
+    const { restaurant, branche } = req;
+
+    // update restaurant.branches array
+    restaurant.branches = [
+        ...restaurant.branches,
+        branche._id
+    ];
+
+    const updatedRestaurant = await restaurant.save({ new: true, runValidators: true });
+    if (!updatedRestaurant) {
+        return next(new CustomError("Add Brache to Restaurant failed. Internal server error.", 500));
+    }
+
+    // update branche.restaurant
+    branche.restaurant = restaurant._id;
+    const updatedBranche = await branche.save({ new: true, runValidators: true });
+    if (!updatedBranche) {
+        return next(new CustomError("Branche update failed. Internal server error.", 500));
+    }
+
+    await updatedRestaurant.populate('branches');
+
+    const responseData = {
+        name: updatedRestaurant.name,
+        branches: updatedRestaurant.branches
+    };
+
+    return res.status(200).json({
+        success: true,
+        data: responseData
+    })
+});
+
+const addMenuItemsToRestaurant = asyncErrorWrapper(async (req, res, next) => {
+
+    const { restaurant } = req;
+    const { menuIds } = req.body;
+
+    restaurant.menu = [
+        ...restaurant.menu,
+        ...menuIds
+    ];
+
+    const updatedRestaurant = await restaurant.save();
+
+    res.status(200).json({
+        success: true,
+        data: {
+            restaurant: {
+                name: updatedRestaurant.name,
+                menu: updatedRestaurant.menu
+            }
+        }
+    })
+});
+
+module.exports = { getSingleRestaurantDetail, getAllHighRatingRestaurants, createRestaurant, getAllRestaurants, addBrancheToRestaurant, addMenuItemsToRestaurant };

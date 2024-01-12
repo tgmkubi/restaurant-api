@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const Restaurant = require('./Restaurant');
+const CustomError = require('../helpers/error/CustomError');
 const { Schema } = mongoose;
 
 const BrancheSchema = new Schema({
@@ -31,10 +33,10 @@ const BrancheSchema = new Schema({
             required: [true, 'Street is required'],
         },
     },
-    restaurant: [{
+    restaurant: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Restaurant'
-    }]
+    },
 });
 
 module.exports = mongoose.model('Branche', BrancheSchema);
