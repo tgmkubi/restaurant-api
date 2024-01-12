@@ -3,6 +3,8 @@ const Review = require('../models/Review');
 // const { paginationHelper } = require('../helpers/mongodb/pagination');
 // const { lookupHelper } = require('../helpers/mongodb/lookup');
 const { aggregationHelper } = require('../helpers/mongodb/aggregation');
+const CustomError = require('../helpers/error/CustomError');
+const Restaurant = require('../models/Restaurant');
 
 // const getAllReviews = asyncErrorWrapper(async (req, res, next) => {
 
@@ -114,4 +116,48 @@ const getAllReviews = asyncErrorWrapper(async (req, res, next) => {
 
     return res.status(200).json(queryResults);
 });
-module.exports = { getAllReviews };
+
+const createReview = asyncErrorWrapper(async (req, res, next) => {
+
+    const { comment, rating } = req.body;
+    const { user, order } = req;
+
+    // review create
+    const review = await Review.create({
+        user: user._id,
+        restaurant: order.restaurant,
+        order: order._id,
+        comment: comment,
+        rating: rating
+    });
+
+    if (!review) {
+        return next(new CustomError("Internal Server Error. Review create failed.", 500));
+    }
+
+    // update order.review string
+    order.review = review._id;
+    await order.save();
+
+    // update user.reviews array
+    user.reviews = [
+        ...user.reviews,
+        review._id
+    ];
+    await user.save();
+
+    // update restaurant.review
+    const restaurant = await Restaurant.findById(order.restaurant);
+    restaurant.reviews = [
+        ...restaurant.reviews,
+        review._id
+    ];
+    await restaurant.save();
+
+    return res.status(200).json({
+        success: true,
+        data: review
+    })
+});
+
+module.exports = { getAllReviews, createReview };

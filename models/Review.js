@@ -12,6 +12,7 @@ const ReviewSchema = new Schema({
     },
     order: {
         type: mongoose.Schema.ObjectId,
+        unique: true,
         ref: "Order"
     },
     comment: {

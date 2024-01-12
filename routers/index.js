@@ -11,7 +11,6 @@ router.use('/users', user);
 router.use('/auth', auth);
 router.use('/restaurants', restaurant);
 router.use('/menu', menu);
-
 router.use('/reviews', review);
 
 module.exports = router;

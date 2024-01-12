@@ -154,31 +154,31 @@ const getPermissionToDeleteOrder = asyncErrorWrapper(async (req, res, next) => {
     return next();
 });
 
-// const checkQuestionExist = asyncErrorWrapper(async (req, res, next) => {
-//     const question_id = req.params.id || req.params.question_id;
-//     const question = await Question.findById({ _id: question_id });
+const checkOrderHasReview = asyncErrorWrapper(async (req, res, next) => {
 
-//     if (!question) {
-//         return next(new CustomError("There is no such question with that id"));
-//     }
+    if (req.order.review) {
+        return next(new CustomError("Review create failed. Order review is already exist. Try to update review.", 400));
+    }
 
-//     req.question = question;
-//     next();
-// });
+    return next();
+});
 
-// const checkQuestionAndAnswerExist = asyncErrorWrapper(async (req, res, next) => {
-//     const { question_id } = req.params;
-//     const { answer_id } = req.params;
-//     const answer = await Answer.findOne({
-//         _id: answer_id,
-//         question: question_id
-//     });
+const getOrderOwnerAccess = asyncErrorWrapper(async (req, res, next) => {
 
-//     if (!answer) {
-//         return next(new CustomError("There is no answer with that id associated with question id", 400));
-//     };
+    const order = req.order;
 
-//     req.answer = answer;
-//     next();
-// });
-module.exports = { checkUserExist, checkRestaurantExist, checkBrancheExist, checkBrancheExistInRestaurant, checkMenuExist, checkMenuItemExist, checkMenuItemsExist, checkMenuItemsExistInRestaurant, checkOrderExist, getPermissionToDeleteOrder };
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+        return next(new CustomError("Internal Server Error.", 500));
+    }
+
+    if ((order.user.toString() !== user._id) && (user.role !== "admin")) {
+        return next(new CustomError("You don't have permission to review this order.", 403));
+    }
+
+    req.user = user;
+    return next();
+});
+
+module.exports = { checkUserExist, checkRestaurantExist, checkBrancheExist, checkBrancheExistInRestaurant, checkMenuExist, checkMenuItemExist, checkMenuItemsExist, checkMenuItemsExistInRestaurant, checkOrderExist, getPermissionToDeleteOrder, checkOrderHasReview, getOrderOwnerAccess };
